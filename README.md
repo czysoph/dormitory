@@ -7,7 +7,7 @@
 
 #### 软件架构
 
-![system framework](doc\picture\system framework.png)
+![system framework](https://github.com/czysoph/dormitory/raw/master/doc/picture/system framework.png)
 
 
 #### **数据流图**
