@@ -6,10 +6,10 @@
 该宿舍管理系统是教务系统组成的一部分，宿舍管理系统中的学生信息由教务系统提供，而宿舍管理系统为教务系统提供学生的住宿信息。
 
 #### 软件架构
-![本地路径](doc/Data flow diagram.png "相对路径演示")
+![system framework](doc\picture\system framework.png)
 
 #### **数据流图**
-
+![Data flow diagram](doc\picture\Data flow diagram.png)
 
 #### 环境与安装
 
