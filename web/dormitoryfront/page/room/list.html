@@ -1,0 +1,145 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main">
+        <div style="margin: 10px 10px 10px 10px">
+            <form class="layui-form layui-form-pane" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">房间编号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="id" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="update">
+                    <i class="layui-icon layui-icon-edit"></i>修改
+                </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table','miniPage','miniAdmin','element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniAdmin = layui.miniAdmin,
+            miniPage = layui.miniPage;
+
+        table.render({
+            elem: '#currentTableId',
+            method: 'post',
+            url: 'room/query',
+            toolbar: '#toolbarDemo',
+            defaultToolbar: ['filter', 'exports', 'print'],
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 120, title: '房间编号', sort: true},
+                {field: 'buildingId', title: '楼栋名称', templet:'<div>{{d.building.buildingName}}</div>'},
+                {field: 'brand', title: '门牌号', sort: true },
+                {field: 'floor', title: '楼层', sort: true, templet: function(row){
+                        return row.floor + '层';
+                    }
+                },
+                {field: 'roomCapacity', title: '房间容量', sort: true, templet: function(row){
+                        return row.roomCapacity + '床';
+                    }
+                },
+                {field: 'freeCapacity', title: '空床位数', sort: true}
+            ]],
+            limits: [10, 15, 20, 30, 50, 100],
+            limit: 10,
+            page: true,
+            skin: 'line'
+        });
+
+        window.reload = function () {
+            table.reload('currentTableId');     // 刷新表格
+        }
+
+        /**
+         * toolbar事件监听
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'update') {                            // 监听修改操作(将状态更改为审核通过)
+                let data = table.checkStatus('currentTableId').data;
+                if (data.length === 0){
+                    layer.msg("还没有选中数据");
+                } else if (data.length !== 1) {
+                    layer.msg("只能选择一条数据进行修改");
+                } else {
+                    let content = miniPage.getHrefContent('room/update.html');     // ajax异步获取
+                    let openWH = miniPage.getOpenWidthHeight();
+                    let index = layer.open({
+                        title: '编辑房间',
+                        type: 1,
+                        shade: 0.3,
+                        maxmin:true,                    // 显示最大最小化的按钮
+                        shadeClose: true,
+                        area: ['600px', '600px'],       // 原始值 area: [openWH[0] + 'px', openWH[1] + 'px'],
+                        offset: 'auto',                 // 原始值 offset: [openWH[2] + 'px', openWH[3] + 'px'],
+                        content: content,
+                    });
+                    setFormValue(data[0]);
+                    console.log(data[0]);
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                }
+            }
+<!--            else if (obj.event === 'delete') {                            // 监听修改操作(将状态更改为审核不通过)-->
+<!--                let data = table.checkStatus('currentTableId').data;-->
+<!--                if (data.length === 0){-->
+<!--                    layer.msg("还没有选中数据");-->
+<!--                } else if (data.length !== 1) {-->
+<!--                    layer.msg("只能选择一条数据进行修改");-->
+<!--                } else {-->
+<!--                    axios.post('intention/delete', {id:data[0].id, inteStatus:2}).then(function (response) {-->
+<!--                        layer.msg(response.msg);-->
+<!--                        table.reload('currentTableId');                      // 重新加载表格-->
+<!--                    }).catch(function (error) {-->
+<!--                    	layer.msg(error);-->
+<!--                    });-->
+<!--                }-->
+<!--            }-->
+        });
+
+
+        // 监听搜索操作
+<!--        form.on('submit(data-search-btn)', function (data) {-->
+<!--            var result = JSON.stringify(data.field);-->
+
+<!--            //执行搜索重载-->
+<!--            table.reload('currentTableId', {-->
+<!--                where: data.field-->
+<!--            }, 'data');-->
+<!--            return false;-->
+<!--        });-->
+
+        function setFormValue(data) {               // 点击修改后，给表单赋值
+            form.val("updateForm", {
+                id: data.id,
+                buildingId: data.buildingId,
+                floor: data.floor,
+                brand: data.brand,
+                roomCapacity: data.roomCapacity,
+                freeCapacity: data.freeCapacity
+            })
+        }
+
+
+
+    });
+</script>

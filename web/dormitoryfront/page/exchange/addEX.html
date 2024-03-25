@@ -1,0 +1,111 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form" style="width: 80%;margin-top: 20px;">
+        <div class="layui-form layuimini-form" lay-filter="updateForm" >
+        <div class="layui-form-item">
+
+            <label class="layui-form-label required">ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" lay-verify="required" readonly="readonly"  placeholder="申请编号" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+            <label class="layui-form-label required">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="gender"  value="0" title="女‍🙋🏻‍♀️" lay-filter="selSex">
+                <input type="radio" name="gender"  value="1" title="男🙋🏻‍♂️" lay-filter="selSex">
+            </div>
+            <div class="layui-input-block">
+            </div>
+            <label class="layui-form-label required">楼栋</label>
+            <div class="layui-input-block">
+                <select  id="bId" name="bId" lay-verify="required" lay-filter="selBid">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+            <label class="layui-form-label required">宿舍</label>
+            <div class="layui-input-block">
+                <select  id="rId" name="rId" lay-verify="required" lay-filter="selRid">
+                    <option value="">请选择</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="text-align: center;margin-top: 30px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+    </div>
+</div>
+<script>
+    layui.use(['form', 'table', 'axios', 'miniAdmin'], function () {
+        let form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            axios = layui.axios,
+            miniAdmin = layui.miniAdmin,
+            $ = layui.$;
+
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        let parentIndex = layer.index;
+
+        form.on('radio(selSex)',function(data){
+            // 1.显示楼栋列表一级
+            axios.post('building/queryDid',{ buildGender : data.value}).then(function (response) {
+                let options;
+                $('#bId').empty();
+                for (let obj of response.data){
+                    options += '<option value="'+ obj.id + '">'+obj.id + '</option>'
+                }
+                console.log(options);
+                $('#bId').append(options);
+                form.render('select');
+            }).catch(function (error) {
+                console.log(error);
+            })
+
+        });
+
+
+        //2.监听父级，每当父级发生变化时，渲染子级的值
+        form.on('select(selBid)', function (data) {
+            axios.post('room/queryRid',{ buildingId:data.value }).then(function (response) {
+                let options;
+                // 清空房间号
+                $('#rId').empty();
+                for (let obj of response.data){
+                    options += '<option value="'+ obj.id + '">'+obj.id + '</option>'
+                }
+                console.log(options);
+                $('#rId').append(options);
+                form.render('select');
+            }).catch(function (error) {
+                console.log(error);
+            })
+        });
+
+
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data.field)
+            axios.post('exchange/updateEX', {id:data.field.id , roomId:data.field.rId , exStatus:3}).then(function (response) {
+                if(response.code === 200){
+                    layer.msg(response.msg);                        // layer的成功提示
+                    window.reload();                                // 刷新页面，获取更新后的数据库数据
+                }
+                layer.close(parentIndex);                           // 关闭弹出层
+            }).catch(function (error) {
+                layer.msg(error);
+            });
+            return false;
+        });
+
+    });
+</script>

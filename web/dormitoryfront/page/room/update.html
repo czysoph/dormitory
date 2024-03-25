@@ -1,0 +1,102 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form" lay-filter="updateForm" style="width: 80%;margin-top: 20px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">房间编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" lay-verify="required" readonly="readonly" lay-reqtext="房间编号不能为空" placeholder="楼栋号" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">楼栋编号</label>
+            <div class="layui-input-block">
+                <input type="text" name="buildingId" lay-verify="required" readonly="readonly" lay-reqtext="楼栋编号不能为空" placeholder="楼栋名" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">楼层</label>
+            <div class="layui-input-block">
+                <input type="text" name="floor" lay-verify="required" readonly="readonly" lay-reqtext="楼层不能为空" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">门牌号</label>
+            <div class="layui-input-block">
+                <input type="text" name="brand" lay-verify="required" readonly="readonly" lay-reqtext="门牌号不能为空" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">床位总数</label>
+            <div class="layui-input-block">
+                <input type="text" name="roomCapacity" lay-verify="required|number" lay-reqtext="床位总数不能为空" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">空床位数</label>
+            <div class="layui-input-block">
+                <input type="text" name="freeCapacity" lay-verify="number" readonly="readonly" lay-reqtext="" value="" class="layui-input">
+                <tip>此处不能修改</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="text-align: center;margin-top: 30px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    layui.use(['form', 'table', 'axios', 'miniAdmin'], function () {
+        let form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            axios = layui.axios,
+            miniAdmin = layui.miniAdmin,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        let parentIndex = layer.index;
+
+
+        let setting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            check:{
+                enable: true
+            }
+        }
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            axios.post('room/update', data.field).then(function (response) {
+                if(response.code === 200){
+                    layer.msg(response.msg);                        // layer的成功提示
+                    window.reload();                                // 同上
+                }
+                layer.close(parentIndex);                           // 关闭弹出层
+            }).catch(function (error) {
+                layer.msg(error);
+            });
+            return false;
+        });
+
+    });
+</script>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sushe.mapper.RoomMapper">
+
+	<resultMap type="com.sushe.entity.Room" id="Room">
+		<id column="id" property="id"/>
+		<result column="building_id"  property="buildingId"/>
+		<result column="room_brand"  property="brand"/>
+		<result column="room_floor"  property="floor"/>
+		<result column="room_capacity"  property="roomCapacity"/>
+		<result column="free_capacity"  property="freeCapacity"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.sushe.entity.Room">
+		insert into tb_room(
+		    id,
+			building_id,
+			room_brand,
+			room_floor,
+			room_capacity,
+			free_capacity
+		)values(
+		    concat(#{buildingId}, #{brand}),
+			#{buildingId},
+			#{brand},
+			#{floor},
+			#{roomCapacity},
+			#{freeCapacity}
+		)
+	</insert>
+
+	<select id="query" resultMap="Room">
+		select * from tb_room
+		<include refid="RoomFindCriteria"/>
+	</select>
+
+	<select id="queryFreeRoom" resultMap="Room">
+		SELECT r.* FROM `tb_room` r join `tb_building` b on r.building_id=b.id
+		WHERE b.build_gender=#{buildGender} and r.free_capacity is NOT NULL and r.free_capacity >0
+	</select>
+
+	<select id="queryRid" resultMap="Room">
+		select distinct id , room_brand from tb_room
+		where building_id = #{buildingId} and  free_capacity is NOT NULL and free_capacity > 0
+		ORDER BY id
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from tb_room
+		<include refid="RoomFindCriteria"/>
+	</select>
+
+	<select id="detail" resultMap="Room">
+		select * from tb_room where id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from tb_room where id = #{id}
+	</delete>
+
+	<delete id="deleteByBuildingId">
+		delete from tb_room where building_id = #{buildingId}
+	</delete>
+
+	<update id="update">
+		update tb_room set
+			building_id=#{buildingId},
+			room_brand=#{brand},
+			room_floor=#{floor},
+			room_capacity=#{roomCapacity},
+			free_capacity=#{freeCapacity}
+		where id = #{id}
+	</update>
+
+	<update id="updateSelective">
+		update tb_room set
+			<if test="buildingId != null">building_id = #{buildingId},</if>
+			<if test="brand != null">room_brand = #{brand},</if>
+			<if test="floor != null">room_floor = #{floor},</if>
+			<if test="roomCapacity != null">room_capacity = #{roomCapacity},</if>
+			<if test="freeCapacity != null">free_capacity = #{freeCapacity}</if>
+		where id = #{id}
+	</update>
+
+	<sql id="RoomFindCriteria">
+		<where>
+			and id != 0
+			<if test="id != null ">and id = #{id}</if>
+			<if test="buildingId != null">and building_id = #{buildingId}</if>
+			<if test="brand != null">and room_brand = #{brand}</if>
+			<if test="floor != null">and room_floor = #{floor}</if>
+			<if test="roomCapacity != null">and room_capacity = #{roomCapacity}</if>
+			<if test="freeCapacity != null">and free_capacity = #{freeCapacity}</if>
+		</where>
+	</sql>
+
+
+	<update id="capacityPlusOne">
+		update tb_room set free_capacity = free_capacity + 1 where id = #{id}
+	</update>
+
+	<update id="capacityMinusOne">
+		update tb_room set free_capacity = free_capacity - 1 where id = #{id}
+	</update>
+
+	<select id="buildingTotalStudentBedAmount" resultType="int">
+		select sum(room_capacity) from tb_room where building_id = #{buildingId}
+	</select>
+
+	<!-- 查询某栋楼的学生床位总数 -->
+	<select id="queryTotalStuBed" resultType="int">
+		select sum(room_capacity) from tb_room where building_id = #{buildingId}
+	</select>
+
+<!--	<select id="queryTotalStuRoom" resultType="int">-->
+<!--		select count(*) from tb_room where building_id = #{buildingId} and room_type = 0-->
+<!--	</select>-->
+
+	<!-- 查询有空床位的学生房间ID -->
+	<select id="queryEachStuRoomId" resultType="int">
+		select id from tb_room
+		where building_id = #{buildingId}
+		  and (room_capacity - (select count(*) from tb_user where room_id = tb_room.id)) > 0;
+	</select>
+
+
+	<!-- 查询学生房间的空床位数量 -->
+	<select id="queryEachStuRoomFreeBedAmount" resultType="int">
+		select (room_capacity - (select count(*) from tb_user where room_id = #{roomId}))
+		from tb_room
+		where id = #{roomId}
+	</select>
+
+</mapper>

@@ -1,0 +1,32 @@
+body {
+    margin: 0;
+    width: 100%;
+    height: 100vh;
+    font-family: "Exo", sans-serif;
+    color: #eee;
+    background: url("../../images/loginback.jpg") ; /* 设置背景的大小 */;
+    background-size: 100% auto;
+
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+
+.silk-transparent {
+
+}
+
+
+.silk-input-bg-gray {
+    background: #C0C0C0;
+}

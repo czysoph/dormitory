@@ -1,0 +1,79 @@
+<div class="layuimini-container layuimini-page-anim">
+    <div class="layuimini-main welcome">
+        <div class="layui-row">
+            <div class="layui-card-silk-blue-for-notification">
+                <div class="layui-card-header silk-color-light-gray">
+                    <i class="fa fa-building-o icon "></i> 楼栋通知
+                </div>
+                <div class="layui-card-body">
+                    <div style="width: 100%;min-height:630px">
+                        <div class="layui-row" id="building-notification">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    layui.use(['form', 'table','miniPage','miniAdmin','element', 'axios', 'echarts'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniAdmin = layui.miniAdmin,
+            axios = layui.axios,
+            echarts = layui.echarts,
+            miniPage = layui.miniPage;
+
+        // 1. 加载楼栋通知
+        function loadBuildingNotification() {
+            axios.post('notification/query_my_building').then(function (response) {
+                console.log("楼栋通知数据：");
+                console.log(response.data);
+                response.data.forEach(item=>{
+                    let type;
+                    if (item.notiType === 0){
+                        type = `
+                                <div class="layui-card-header silk-color-deep-gray-for-notification-head">
+                                    ${item.notiHead}
+                                </div>
+                                <span class="layui-badge pull-right layui-bg-silk-light-gray-reversed">${item.notiDate}</span>
+                                <div class="layui-card-body silk-color-light-gray" style="margin: 10px 10px 0px 10px;">
+                                    ${item.notiContent}
+                                </div>
+                        `;
+                    } else if (item.notiType === 1){
+                        type = `
+                                <div class="layui-card-header silk-color-red-for-notification-head">
+                                    ${item.notiHead}
+                                </div>
+                                <span class="layui-badge pull-right layui-bg-silk-light-gray-reversed">${item.notiDate}</span>
+                                <div class="layui-card-body silk-color-light-gray" style="margin: 10px 10px 0px 10px;">
+                                    ${item.notiContent}
+                                </div>
+                        `;
+                    }
+
+                    let dynamicNotification = `
+                        <div class="layui-col-md6">
+                            <div class="silk-card-notification">
+                                ${type}
+                            </div>
+                        </div>
+                    `;
+
+                    $('#building-notification').append(dynamicNotification);
+                });
+
+            }).catch(function (error) {
+                layer.msg(error);
+            });
+        }
+
+        loadBuildingNotification();
+
+    });
+
+</script>

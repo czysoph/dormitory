@@ -1,0 +1,139 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form" style="width: 80%;margin-top: 20px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">ID</label>
+            <div class="layui-input-block">
+                <input type="text" name="id" lay-verify="required|id" lay-reqtext="学号/工号不能为空" placeholder="学号/工号" value="" class="layui-input" maxlength="8">
+                <tip>后勤开头为1000，宿管开头为1111，维修人员开头为3333</tip>
+                <tip>学生开头为入学年份</tip>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" name="userName" lay-verify="required" lay-reqtext="姓名不能为空" placeholder="姓名" value="" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">密码</label>
+            <div class="layui-input-block">
+                <input type="password" readonly name="userPwd"  lay-reqtext="密码不能为空" placeholder="密码" value="123456"  class="layui-input">
+                <tip>默认：123456</tip>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">性别</label>
+            <div class="layui-input-block">
+                <input type="radio" name="gender" value=0 title="女‍🙋🏻‍♀️" >
+                <input type="radio" name="gender" value=1 title="男🙋🏻‍♂️" >
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="email" name="email" lay-verify="email" placeholder="example@email.com" value="" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <label class="layui-form-label required">角色</label>
+            <div class="layui-input-block">
+                <select name="userType" lay-verify="required" >
+                    <option value="">请选择</option>
+                    <option value="0">学生👨🏻‍🎓</option>
+                    <option value="1">宿管员👵🏻</option>
+                    <option value="2">后勤中心🏫</option>
+                    <option value="3">维修人员🏫</option>
+                </select>
+            </div>
+        </div>
+
+<!--        <div class="layui-form-item">-->
+<!--            <label class="layui-form-label">房间</label>-->
+<!--            <div class="layui-input-block">-->
+<!--                <select name="roomId" id="roomId" >-->
+<!--                    <option value="">请选择</option>-->
+<!--                </select>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="layui-form-item" style="text-align: center;margin-top: 30px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+    layui.use(['form', 'table', 'axios', 'miniAdmin'], function () {
+        let form = layui.form,
+            layer = layui.layer,
+            table = layui.table,
+            axios = layui.axios,
+            miniAdmin = layui.miniAdmin,
+            $ = layui.$;
+
+        /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+        // 当前弹出层，防止ID被覆盖
+        let parentIndex = layer.index;
+
+        //自定义验证
+        form.verify({
+            //验证编号
+            id:[/^[\d]{8}$/, '编号为8位数字！']
+
+        });
+
+<!--        form.on('radio(selectGender)',function(data){//根据选择的性别提供房间id-->
+<!--            // 1.显示楼栋列表一级-->
+<!--            axios.post('room/query_free_room',{ buildGender : data.value}).then(function (response) {-->
+<!--                let options;-->
+<!--                $('#roomId').empty();//移除roomId元素的所有内容-->
+<!--                for (let obj of response.data){-->
+<!--                    options += '<option value="'+ obj.id + '">'+obj.id + '</option>'-->
+<!--                }-->
+<!--                console.log(options);-->
+<!--                $('#roomId').append(options);//动态添加roomId选项-->
+<!--                form.render('select');//刷新动态更新的那部分select-->
+<!--            }).catch(function (error) {-->
+<!--                console.log(error);-->
+<!--            })-->
+<!--        });-->
+
+<!--        form.on('select(selType)', function (data){//根据选择的角色，判断是否给选择房间-->
+<!--            console.log(data.value);-->
+<!--            if(data.value !== "1"){-->
+<!--                $("#roomId").attr("disabled","disabled");-->
+<!--            }else{-->
+<!--                $("#roomId").removeAttr("disabled");-->
+<!--            }-->
+
+<!--            form.render('select');-->
+<!--        });-->
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            console.log(data.field)
+            axios.post('user/create', data.field).then(function (response){
+                if(response.code === 200){
+                    layer.msg(response.msg);                        // layer的成功提示
+                    // miniAdmin.success(response.msg);             // miniAdmin的成功提示
+                    // layui.table.reload('currentTableId');        // 刷新页面
+                    window.reload();                                // 同上
+                }
+                layer.close(parentIndex);                           // 关闭弹出层
+            }).catch(function (error) {
+                layer.msg(error);
+            });
+            return false;
+        });
+
+    });
+</script>

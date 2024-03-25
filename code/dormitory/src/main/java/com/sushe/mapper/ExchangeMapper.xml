@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sushe.mapper.ExchangeMapper">
+
+	<resultMap type="com.sushe.entity.Exchange" id="Exchange">
+		<id column="id" property="id"/>
+		<result column="stu_id"  property="stuId"/>
+		<result column="ex_reason"  property="exReason"/>
+		<result column="ex_intention" property="exIntention"/>
+		<result column="ex_date" property="exDate"/>
+		<result column="ex_status"  property="exStatus"/>
+		<result column="app_type" property="appType"/>
+		<result column="re_back" property="reBack"/>
+	</resultMap>
+
+	<insert id="create" keyProperty="id" useGeneratedKeys="true" parameterType="com.sushe.entity.Exchange">
+		insert into tb_exchange(
+			stu_id,
+			ex_reason,
+		    ex_intention,
+			ex_date,
+			ex_status,
+			app_type,
+			re_back
+		)values(
+			#{stuId},
+			#{exReason},
+		    #{exIntention},
+		    #{exDate},
+			#{exStatus},
+			#{appType},
+			#{reBack}
+		)
+	</insert>
+
+	<select id="query" resultMap="Exchange">
+		select * from tb_exchange
+		<include refid="ExchangeFindCriteria"/>
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from tb_exchange
+		<include refid="ExchangeFindCriteria"/>
+	</select>
+
+	<select id="detail" resultMap="Exchange">
+		select * from tb_exchange where id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from tb_exchange where id = #{id}
+	</delete>
+	<update id="update">
+		update tb_exchange set
+			stu_id=#{stuId},
+			ex_reason=#{exReason},
+		    ex_intention=#{exIntention},
+			ex_date=#{exDate},
+			ex_status=#{exStatus},
+			app_type=#{appType}
+			re_back=#{reBack}
+		where id = #{id}
+	</update>
+
+	<update id="updateSelective">
+		update tb_exchange
+		    <set>
+				<if test="stuId != null">stu_id = #{stuId},</if>
+				<if test="exReason != null and exReason != ''"> ex_reason = #{exReason},</if>
+				<if test="exIntention != null and exIntention != ''"> ex_intention = #{exIntention},</if>
+				<if test="exDate != null and exDate != ''"> ex_date = #{exDate},</if>
+				<if test="exStatus != null">ex_status = #{exStatus},</if>
+				<if test="appType != null">app_type = #{appType}</if>
+				<if test="reBack != null">re_back=#{reBack}</if>
+			</set>
+		where id = #{id}
+	</update>
+
+	<update id="updateOut">
+		update tb_exchange e join tb_user u on e.stu_id = u.id join tb_room r on u.room_id = r.id
+		set
+		u.room_id = 0,
+		r.free_capacity = r.free_capacity + 1,
+		e.ex_status=#{exStatus}
+		where e.id = #{id}
+	</update>
+
+	<update id="updateEX">
+
+		update tb_exchange e join tb_user u on e.stu_id = u.id join tb_room r on u.room_id = r.id
+		set
+		ex_status = #{exStatus},
+		u.room_id = #{roomId},
+		r.free_capacity = r.free_capacity + 1
+		where e.id = #{id}
+
+	</update>
+
+	<sql id="ExchangeFindCriteria">
+		<where>
+			<if test="id != null">and id = #{id}</if>
+			<if test="stuId != null">and stu_id = #{stuId}</if>
+			<if test="exReason != null and exReason != ''">and ex_reason = #{exReason}</if>
+			<if test="exIntention != null and exIntention != ''">and ex_intention = #{exIntention}</if>
+			<if test="exDate != null and exDate != ''">and ex_date = #{exDate}</if>
+			<if test="exStatus != null">and ex_status = #{exStatus}</if>
+			<if test="appType != null">and app_type =#{appType}</if>
+			<if test="reBack != null">and re_back=#{reBack}</if>
+		</where>
+	</sql>
+
+</mapper>

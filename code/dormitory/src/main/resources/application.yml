@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/dormitory?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&useSSL=false
+    username: root
+    password: 123456
+  jackson:
+    date-format: yyyy年MM月dd日
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: 1174584599@qq.com
+    password: ksggtuucsbhcfgbf
+    protocol: smtp
+    default-encoding: UTF-8
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.starttls.required: true
+      mail.smtp.socketFactory.port: 465
+      mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+      mail.smtp.socketFactory.fallback: false
+
+
+server:
+  port: 8080
+  servlet:
+    context-path: /dormitory
+
+mybatis:
+  mapper-locations: com/sushe/mapper/*.xml
+
+logging:
+  level:
+    com:
+      silk:
+        mapper: debug
+
+pagehelper:
+  helper-dialect: mysql       # 根据方言来选择合适的分页方式

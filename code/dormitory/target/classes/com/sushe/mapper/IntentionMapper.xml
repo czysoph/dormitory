@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sushe.mapper.IntentionMapper">
+
+	<resultMap type="com.sushe.entity.Intention" id="Intention">
+		<id column="id" property="id"/>
+		<result column="stu_id"  property="stuId"/>
+		<result column="room_id"  property="roomId"/>
+		<result column="inte_content" property="inteContent"/>
+		<result column="inte_date" property="inteDate"/>
+		<result column="inte_status"  property="inteStatus"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.sushe.entity.Intention">
+		insert into tb_intention(
+		    id,
+			stu_id,
+			room_id,
+			inte_content,
+			inte_date,
+			inte_status
+		)values(
+		    #{id},
+			#{stuId},
+			#{roomId},
+		    #{inteContent},
+		    #{inteDate},
+			#{inteStatus}
+		)
+	</insert>
+
+	<select id="query" resultMap="Intention">
+		select * from tb_intention
+		<include refid="IntentionFindCriteria"/>
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from tb_intention
+		<include refid="IntentionFindCriteria"/>
+	</select>
+
+	<select id="queryApplicationAmount" resultType="int">
+		select count(1) from tb_intention
+		WHERE room_id= #{roomId}
+	</select>
+
+	<select id="detail" resultMap="Intention">
+		select * from tb_intention where id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from tb_intention where id = #{id}
+	</delete>
+
+	<delete id="deleteStu">
+		delete from tb_intention where stu_id = #{stuId}
+	</delete>
+
+	<update id="update">
+		update tb_intention set
+			stu_id=#{stuId},
+			room_id=#{roomId},
+			inte_content=#{inteContent},
+			inte_date=#{inteDate},
+			inte_status=#{inteStatus}
+		where id = #{id}
+	</update>
+
+	<update id="updateSelective">
+		update tb_intention set
+			<if test="stuId != null and stuId != ''"> stu_id = #{stuId},</if>
+			<if test="roomId != null"> room_id = #{roomId},</if>
+			<if test="inteContent != null"> inte_content = #{inteContent},</if>
+			<if test="inteDate != null"> inte_date = #{inteDate},</if>
+			<if test="inteStatus != null">inte_status = #{inteStatus}</if>
+		where id = #{id}
+	</update>
+
+	<sql id="IntentionFindCriteria">
+		<where>
+			<if test="id != null">and id = #{id}</if>
+			<if test="stuId != null and stuId != ''">and stu_id = #{stuId}</if>
+			<if test="roomId != null">and room_id = #{roomId}</if>
+			<if test="inteContent != null">and inte_content like concat('%', #{inteContent},'%')</if>
+			<if test="inteDate != null">and inte_date = #{inteDate}</if>
+			<if test="inteStatus != null">and inte_status = #{inteStatus}</if>
+		</where>
+	</sql>
+	
+</mapper>

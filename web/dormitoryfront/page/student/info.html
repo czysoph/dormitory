@@ -1,0 +1,107 @@
+<div class="layuimini-main">
+    <div class="layui-form layuimini-form" style="width: 30%;margin-top: 20px;">
+        <div class="layui-form-item">
+            <label class="layui-form-label">学号/工号</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="id" name="id" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="name" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">性别</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="gender" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-block">
+                <input type="text" id="email" name="email" lay-verify="email" placeholder="example@email.com" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">楼栋</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="buildingId" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">房间</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="roomId" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">宿舍费</label>
+            <div class="layui-input-block">
+                <input type="text" readonly id="buildMoney" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center;margin-top: 30px;">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['form', 'table','miniPage','miniAdmin','element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            miniAdmin = layui.miniAdmin,
+            miniPage = layui.miniPage;
+
+         /**
+         * 初始化表单，要加上，不然刷新部分组件可能会不加载
+         */
+        form.render();
+
+
+        /**
+         * @imp 获取当前登录用户信息的方法
+         * @Tag 请求学生的信息
+         */
+        axios.get('student/info',{}).then(function (response) {
+
+            console.log(response.data)
+            $('#id').val(response.data.id);
+            $('#name').val(response.data.userName);
+            $('#gender').val(response.data.gender===0?"女":"男");
+            $('#email').val(response.data.email);
+            $('#buildingId').val(response.data.room.buildingId);
+            $('#roomId').val(response.data.room.brand);
+            $('#buildMoney').val(response.data.building.buildMoney + '元');
+
+        }).catch(function (error){
+            console.log(error)
+        })
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+<!--			if(new RegExp("^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$").test(data.field.email)){    //验证邮箱-->
+			axios.post('user/update_info', data.field).then(function (response) {
+                if(response.code === 200){
+                    layer.msg(response.msg);            // 添加成功提示
+                    window.reload();                            // 刷新页面，获取更新后的数据库数据
+                }
+                    layer.close(parentIndex);                       // 关闭弹出层
+                }).catch(function (error) {
+                    layer.msg(error);
+            });
+            return false;
+<!--			}else{-->
+<!--			    layer.msg('邮箱格式不正确',{time:5000});-->
+<!--			}-->
+
+        });
+
+    });
+
+</script>

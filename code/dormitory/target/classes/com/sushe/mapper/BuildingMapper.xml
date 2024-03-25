@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sushe.mapper.BuildingMapper">
+
+	<resultMap type="com.sushe.entity.Building" id="Building">
+		<id column="id" property="id"/>
+		<result column="building_name"  property="buildingName"/>
+		<result column="floor_num"  property="floorNum"/>
+		<result column="room_num"  property="roomNum"/>
+		<result column="room_capacity"  property="roomCapacity"/>
+		<result column="build_gender"  property="buildGender"/>
+		<result column="build_money"  property="buildMoney"/>
+		<result column="manager_id"  property="managerId"/>
+	</resultMap>
+
+	<insert id="create" parameterType="com.sushe.entity.Building">
+		insert into tb_building(
+		    id,
+			building_name,
+			floor_num,
+			room_num,
+			room_capacity,
+			build_gender,
+			build_money,
+			manager_id
+		)values(
+		    #{id},
+			#{buildingName},
+			#{floorNum},
+			#{roomNum},
+			#{roomCapacity},
+			#{buildGender},
+			#{buildMoney},
+			#{managerId}
+		)
+	</insert>
+
+	<select id="query" resultMap="Building">
+		select * from tb_building
+		<include refid="BuildingFindCriteria"/>
+	</select>
+
+	<select id="queryDid" resultMap="Building">
+		select distinct id , building_name from tb_building
+		where build_gender = #{buildGender}
+		ORDER BY id
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from tb_building
+		<include refid="BuildingFindCriteria"/>
+	</select>
+
+	<select id="detail" resultMap="Building">
+		select * from tb_building where id = #{id}
+	</select>
+
+	<delete id="delete">
+		delete from tb_building where id = #{id}
+	</delete>
+
+	<update id="update">
+		update tb_building set
+			building_name=#{buildingName},
+			floor_num=#{floorNum},
+			room_num=#{roomNum},
+			room_capacity=#{roomCapacity},
+			build_gender=#{buildGender},
+			build_money=#{buildMoney},
+			manager_id=#{managerId}
+		where id = #{id}
+	</update>
+
+	<update id="updateSelective">
+		update tb_building
+		<set>
+			<if test="buildingName != null and buildingName != ''"> building_name = #{buildingName},</if>
+			<if test="floorNum != null">floor_num = #{floorNum},</if>
+			<if test="roomNum != null">room_num = #{roomNum},</if>
+			<if test="roomCapacity != null">room_capacity = #{roomCapacity},</if>
+			<if test="buildGender != null">build_gender = #{buildGender},</if>
+			<if test="buildMoney != null">build_money = #{buildMoney},</if>
+			<if test="managerId != null">manager_id = #{managerId},</if>
+		</set>
+		where id = #{id}
+	</update>
+
+	<sql id="BuildingFindCriteria">
+		<where>
+			<if test="id != null">and id like concat('%', #{id},'%')</if>
+			<if test="buildingName != null and buildingName != ''">and building_name like concat('%', #{buildingName},'%')</if>
+			<if test="floorNum != null">and floor_num = #{floorNum}</if>
+			<if test="roomNum != null">and room_num = #{roomNum}</if>
+			<if test="roomCapacity != null">and room_capacity = #{roomCapacity}</if>
+			<if test="buildGender != null">and build_gender = #{buildGender}</if>
+			<if test="buildMoney != null">and build_money = #{buildMoney}</if>
+			<if test="managerId != null">and manager_id = #{managerId}</if>
+		</where>
+	</sql>
+
+
+	<select id="queryGender" resultType="int">
+		select build_gender from tb_building where id = #{buildingId}
+	</select>
+
+	<select id="queryDomersBuilding" resultType="int">
+		select id from tb_building where manager_id = #{managerId}
+	</select>
+
+</mapper>
