@@ -11,7 +11,7 @@
 
 ## **数据流图**
 
-![system framework](https://github.com/czysoph/dormitory/blob/master/doc/picture/Data_flow_diagram.png)
+![system framework](doc/picture/Data_flow_diagram.png)
 
 
 ## 环境与安装
