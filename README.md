@@ -7,7 +7,7 @@
 
 #### 软件架构
 
-![system framework]([https://github.com/czysoph/dormitory/blob/master/doc/picture/Data flow diagram.png](https://github.com/czysoph/dormitory/blob/master/doc/picture/Data_flow_diagram.png)?raw=true)
+![system framework]([https://github.com/czysoph/dormitory/blob/master/doc/picture/Data flow diagram.png](https://github.com/czysoph/dormitory/blob/master/doc/picture/Data_flow_diagram.png))
 
 
 #### **数据流图**
