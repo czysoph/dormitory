@@ -1,24 +1,24 @@
 # 宿舍管理系统
 
-#### 介绍
+## 介绍
 该项目为宿舍管理系统。该软件的开发意图是为了快速、高效地对学生宿舍进行管理，并处理学生宿舍相关事务。该软件的应用目标是为了让学生更加方便自由地申请退换寝室，也让后勤管理部门能及时处理申请要求。该软件的作用范围是住校学生，宿舍管理员以及后勤管理人员。
 
 该宿舍管理系统是教务系统组成的一部分，宿舍管理系统中的学生信息由教务系统提供，而宿舍管理系统为教务系统提供学生的住宿信息。
 
-#### 软件架构
+## 软件架构
 
 ![Data flow diagram](https://github.com/czysoph/dormitory/blob/master/doc/picture/system_framework.png)
 
-#### **数据流图**
+## **数据流图**
 
 ![system framework](https://github.com/czysoph/dormitory/blob/master/doc/picture/Data_flow_diagram.png)
 
 
-#### 环境与安装
+## 环境与安装
 
 参考：Installation.md
 
-#### 软件功能
+## 软件功能
 
 本系统设计三种角色，分别为学生、宿舍管理员、后勤管理人员
 
@@ -70,3 +70,6 @@
     - 后勤管理人员
       - 审核申请
       - 修改申请状态
+## 代码说明
+- web为前端代码
+- code为后端代码
